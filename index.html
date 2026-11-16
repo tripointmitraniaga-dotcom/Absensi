@@ -1,161 +1,573 @@
 <!DOCTYPE html>
 <html lang="id">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Aplikasi Absensi - Tripoint Mart</title>
-    <script src="https://cdn.tailwindcss.com"></script>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Absensi Karyawan — Tripoint Mart</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg-page: #fafaf9;
+      --surface: #ffffff;
+      --text-main: #18181b;
+      --text-muted: #71717a;
+      --border: #e4e4e7;
+      
+      /* Palet Merah & Kuning Modern */
+      --brand-red: #dc2626;
+      --brand-red-dark: #b91c1c;
+      --brand-red-soft: #fef2f2;
+      --brand-yellow: #facc15;
+      --brand-yellow-soft: #fefce8;
+      --brand-amber-text: #854d0e;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+      background-color: var(--bg-page);
+      background-image: radial-gradient(circle at top right, #fef2f2 0%, transparent 45%),
+                        radial-gradient(circle at bottom left, #fefce8 0%, transparent 45%);
+      color: var(--text-main);
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: flex-start;
+      padding: 24px 16px;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    .container {
+      width: 100%;
+      max-width: 420px;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-top: 5px solid var(--brand-red);
+      border-radius: 20px;
+      padding: 28px 24px;
+      box-shadow: 0 20px 25px -5px rgba(220, 38, 38, 0.06), 0 8px 10px -6px rgba(0, 0, 0, 0.03);
+      position: relative;
+      overflow: hidden;
+    }
+
+    /* Aksen Kuning Minimalis di Sudut Atas */
+    .container::before {
+      content: "";
+      position: absolute;
+      top: 0;
+      right: 0;
+      width: 90px;
+      height: 5px;
+      background: var(--brand-yellow);
+    }
+
+    /* Header & Logo */
+    .header {
+      text-align: center;
+      margin-bottom: 22px;
+    }
+
+    .logo-wrapper {
+      width: 76px;
+      height: 76px;
+      margin: 0 auto 12px;
+      border-radius: 18px;
+      background: linear-gradient(135deg, var(--brand-red-soft), var(--brand-yellow-soft));
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+      border: 1.5px solid #fee2e2;
+      box-shadow: 0 4px 12px rgba(220, 38, 38, 0.08);
+    }
+
+    .logo-wrapper img {
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+      padding: 6px;
+    }
+
+    .header h1 {
+      font-size: 20px;
+      font-weight: 800;
+      letter-spacing: -0.02em;
+      color: var(--text-main);
+    }
+
+    .header p {
+      display: inline-block;
+      margin-top: 4px;
+      padding: 3px 10px;
+      border-radius: 99px;
+      background: var(--brand-yellow-soft);
+      color: var(--brand-amber-text);
+      border: 1px solid #fef08a;
+      font-size: 11.5px;
+      font-weight: 700;
+      letter-spacing: 0.02em;
+    }
+
+    /* Status Badges (Waktu & GPS) */
+    .status-grid {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 8px;
+      margin-bottom: 22px;
+    }
+
+    .badge {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      padding: 9px 12px;
+      border-radius: 10px;
+      font-size: 12.5px;
+      font-weight: 600;
+      background: #f4f4f5;
+      color: #3f3f46;
+      border: 1px solid var(--border);
+    }
+
+    .badge.gps-ok {
+      background: #ecfdf5;
+      color: #065f46;
+      border-color: #a7f3d0;
+    }
+
+    .badge.gps-wait {
+      background: var(--brand-yellow-soft);
+      color: var(--brand-amber-text);
+      border-color: #fde047;
+    }
+
+    .badge.gps-err {
+      background: var(--brand-red-soft);
+      color: var(--brand-red-dark);
+      border-color: #fecaca;
+    }
+
+    .dot {
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      background: currentColor;
+      flex-shrink: 0;
+    }
+
+    /* Form Controls */
+    .form-group {
+      margin-bottom: 18px;
+    }
+
+    label {
+      display: block;
+      font-size: 13px;
+      font-weight: 700;
+      color: #27272a;
+      margin-bottom: 6px;
+    }
+
+    select, textarea {
+      width: 100%;
+      padding: 11px 13px;
+      font-family: inherit;
+      font-size: 14px;
+      font-weight: 500;
+      color: var(--text-main);
+      background: var(--surface);
+      border: 1.5px solid var(--border);
+      border-radius: 12px;
+      transition: border-color 0.2s, box-shadow 0.2s;
+      outline: none;
+    }
+
+    select:focus, textarea:focus {
+      border-color: var(--brand-red);
+      box-shadow: 0 0 0 3px rgba(220, 38, 38, 0.12);
+    }
+
+    /* Radio Pill Cards untuk Jenis Absen (Merah & Kuning) */
+    .shift-options {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 8px;
+    }
+
+    .shift-options input[type="radio"] {
+      display: none;
+    }
+
+    .shift-label {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      padding: 11px 6px;
+      font-size: 12.5px;
+      font-weight: 700;
+      color: var(--text-muted);
+      background: #fafafa;
+      border: 1.5px solid var(--border);
+      border-radius: 12px;
+      cursor: pointer;
+      transition: all 0.18s ease;
+      margin: 0;
+      line-height: 1.25;
+    }
+
+    .shift-label:hover {
+      border-color: #fca5a5;
+      color: var(--brand-red);
+    }
+
+    .shift-options input[type="radio"]:checked + .shift-label {
+      background: var(--brand-red);
+      color: #ffffff;
+      border-color: var(--brand-red);
+      box-shadow: 0 4px 10px rgba(220, 38, 38, 0.22);
+    }
+
+    /* Kamera */
+    .camera-wrapper {
+      position: relative;
+      width: 100%;
+      aspect-ratio: 4 / 3;
+      background: #18181b;
+      border-radius: 14px;
+      overflow: hidden;
+      border: 1.5px solid var(--border);
+    }
+
+    video, canvas {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+      transform: scaleX(-1);
+    }
+
+    #canvas { display: none; }
+
+    /* Tombol Kamera Beraksen Kuning Modern */
+    .btn-cam {
+      width: 100%;
+      margin-top: 9px;
+      padding: 11px;
+      font-family: inherit;
+      font-size: 13.5px;
+      font-weight: 700;
+      color: #422006;
+      background: var(--brand-yellow);
+      border: 1px solid #eab308;
+      border-radius: 12px;
+      cursor: pointer;
+      transition: background 0.15s, transform 0.1s;
+    }
+
+    .btn-cam:hover { background: #eab308; }
+    .btn-cam:active { transform: scale(0.99); }
+
+    .btn-cam.retake {
+      background: var(--brand-yellow-soft);
+      color: var(--brand-amber-text);
+      border-color: #fde047;
+    }
+
+    /* Tombol Submit Utama Merah */
+    .btn-submit {
+      width: 100%;
+      margin-top: 6px;
+      padding: 14px;
+      font-family: inherit;
+      font-size: 15px;
+      font-weight: 700;
+      color: #ffffff;
+      background: linear-gradient(135deg, var(--brand-red) 0%, var(--brand-red-dark) 100%);
+      border: none;
+      border-radius: 12px;
+      cursor: pointer;
+      box-shadow: 0 6px 15px rgba(220, 38, 38, 0.25);
+      transition: opacity 0.2s, transform 0.1s;
+    }
+
+    .btn-submit:hover { opacity: 0.94; }
+    .btn-submit:active { transform: scale(0.99); }
+    .btn-submit:disabled { background: #a1a1aa; box-shadow: none; cursor: not-allowed; }
+
+    #pesan {
+      margin-top: 14px;
+      text-align: center;
+      font-size: 13.5px;
+      font-weight: 700;
+      min-height: 20px;
+    }
+
+    .footer-note {
+      text-align: center;
+      margin-top: 20px;
+      padding-top: 14px;
+      border-top: 1px solid var(--border);
+      font-size: 11.5px;
+      font-weight: 500;
+      color: #a1a1aa;
+    }
+  </style>
 </head>
-<body class="bg-slate-100 min-h-screen flex items-center justify-center p-4">
-    <div class="bg-white shadow-lg rounded-2xl w-full max-w-md p-6">
-        <div class="text-center mb-6">
-            <h1 class="text-2xl font-bold text-slate-800">Tripoint Mart</h1>
-            <p class="text-sm text-slate-500">Sistem Absensi Karyawan</p>
-        </div>
+<body>
 
-        <form id="attendanceForm" class="space-y-4">
-            <div>
-                <label class="block text-sm font-medium text-slate-700 mb-1">Nama Karyawan</label>
-                <select id="nama" required class="w-full px-4 py-2 border rounded-xl focus:ring-2 focus:ring-blue-500 outline-none bg-white">
-                    <option value="" disabled selected>-- Pilih Nama Karyawan --</option>
-                    <option value="Baiq Haifa Annisa">Baiq Haifa Annisa</option>
-                    <option value="Salwa Jinan Ulia">Salwa Jinan Ulia</option>
-                    <option value="Ilyana Jazlina">Ilyana Jazlina</option>
-                    <option value="Riska Sri Handayani">Riska Sri Handayani</option>
-                </select>
-            </div>
+<div class="container">
+  <div class="header">
+    <div class="logo-wrapper">
+      <!-- Pastikan nama file logo di GitHub Anda adalah logo.png -->
+      <img src="logo.png" alt="Logo Tripoint Mart" onerror="this.style.display='none'">
+    </div>
+    <h1>Tripoint Mart</h1>
+    <p>PORTAL ABSENSI KARYAWAN</p>
+  </div>
 
-            <div>
-                <label class="block text-sm font-medium text-slate-700 mb-1">Jenis Absensi</label>
-                <select id="tipe" class="w-full px-4 py-2 border rounded-xl focus:ring-2 focus:ring-blue-500 outline-none bg-white">
-                    <option value="Masuk">Waktu Masuk</option>
-                    <option value="Pulang">Waktu Pulang</option>
-                    <option value="Ganti Shift">Ganti Shift</option>
-                </select>
-            </div>
+  <div class="status-grid">
+    <div class="badge" id="liveClock">Memuat waktu...</div>
+    <div class="badge gps-wait" id="gpsStatus">
+      <span class="dot"></span>
+      <span id="gpsText">Mendeteksi lokasi GPS...</span>
+    </div>
+  </div>
 
-            <div id="shiftContainer" class="hidden">
-                <label class="block text-sm font-medium text-slate-700 mb-1">Keterangan Ganti Shift</label>
-                <input type="text" id="gantiShift" placeholder="Contoh: Shift Pagi ke Siang / Pengganti Rekan" class="w-full px-4 py-2 border rounded-xl focus:ring-2 focus:ring-blue-500 outline-none">
-            </div>
-
-            <div>
-                <label class="block text-sm font-medium text-slate-700 mb-1">Status Kehadiran</label>
-                <select id="status" class="w-full px-4 py-2 border rounded-xl focus:ring-2 focus:ring-blue-500 outline-none bg-white">
-                    <option value="Hadir">Hadir</option>
-                    <option value="Terlambat">Terlambat</option>
-                    <option value="Ganti Shift">Ganti Shift</option>
-                    <option value="Izin">Izin</option>
-                    <option value="Sakit">Sakit</option>
-                </select>
-            </div>
-
-            <div>
-                <label class="block text-sm font-medium text-slate-700 mb-1">Bukti Foto (Selfie)</label>
-                <div class="flex flex-col items-center space-y-2">
-                    <video id="video" autoplay playsinline class="w-full h-48 bg-black rounded-xl object-cover"></video>
-                    <button type="button" id="snap" class="w-full bg-slate-800 text-white py-2 rounded-xl text-sm font-medium hover:bg-slate-700 transition">Ambil Foto</button>
-                    <canvas id="canvas" class="hidden"></canvas>
-                    <img id="preview" class="hidden w-full h-48 rounded-xl object-cover border">
-                </div>
-            </div>
-
-            <div>
-                <label class="block text-sm font-medium text-slate-700 mb-1">Lokasi GPS</label>
-                <input type="text" id="lokasi" readonly placeholder="Mendapatkan lokasi..." class="w-full px-4 py-2 bg-slate-50 border rounded-xl text-slate-500 text-sm">
-            </div>
-
-            <button type="submit" id="submitBtn" class="w-full bg-blue-600 text-white py-3 rounded-xl font-semibold hover:bg-blue-700 transition shadow-lg shadow-blue-200">Kirim Absensi</button>
-        </form>
-
-        <div id="message" class="mt-4 text-center text-sm font-medium"></div>
+  <form id="formAbsen">
+    <div class="form-group">
+      <label for="nama">Nama Karyawan</label>
+      <select id="nama" required>
+        <option value="">Memuat daftar karyawan...</option>
+      </select>
     </div>
 
-    <script>
-        const scriptURL = 'https://script.google.com/macros/s/AKfycbyUsS3xl0X08A_FmaU3MjUfGL12J59IX4OC1XsdVM1Chb7i4fKBrFHggJAuLaV3MC6H/exec';
-        let fotoBase64 = null;
-        let koordinatGPS = '';
+    <div class="form-group">
+      <label>Jenis Absensi</label>
+      <div class="shift-options">
+        <div>
+          <input type="radio" name="jenisAbsen" id="absenMasuk" value="Kehadiran (Masuk)" checked>
+          <label for="absenMasuk" class="shift-label">Masuk</label>
+        </div>
+        <div>
+          <input type="radio" name="jenisAbsen" id="absenShift" value="Pergantian Shift">
+          <label for="absenShift" class="shift-label">Ganti Shift</label>
+        </div>
+        <div>
+          <input type="radio" name="jenisAbsen" id="absenPulang" value="Pulang">
+          <label for="absenPulang" class="shift-label">Pulang</label>
+        </div>
+      </div>
+    </div>
 
-        // Tampilkan input keterangan jika memilih Ganti Shift
-        const tipeSelect = document.getElementById('tipe');
-        const shiftContainer = document.getElementById('shiftContainer');
-        tipeSelect.addEventListener('change', () => {
-            if (tipeSelect.value === 'Ganti Shift') {
-                shiftContainer.classList.remove('hidden');
-            } else {
-                shiftContainer.classList.add('hidden');
-                document.getElementById('gantiShift').value = '';
-            }
+    <div class="form-group">
+      <label>Foto Bukti Kehadiran</label>
+      <div class="camera-wrapper">
+        <video id="video" autoplay playsinline></video>
+        <canvas id="canvas"></canvas>
+      </div>
+      <button type="button" id="btnAmbilFoto" class="btn-cam">Ambil Foto</button>
+    </div>
+
+    <div class="form-group">
+      <label for="keterangan">Catatan / Keterangan (Opsional)</label>
+      <textarea id="keterangan" rows="2" placeholder="Contoh: Shift Pagi, Lembur, dll."></textarea>
+    </div>
+
+    <button type="submit" id="btnKirim" class="btn-submit">Kirim Absensi</button>
+  </form>
+
+  <div id="pesan"></div>
+  <div class="footer-note">&copy; 2026 Tripoint Mart &bull; Sistem Kehadiran Digital</div>
+</div>
+
+<script>
+  // URL Web App Apps Script Anda sudah terpasang di sini
+  const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbw2PNHvRcjY1TCp9olRVd0k8OhKig37V_3yJKQDsoU41E0kDvsGxWcwKucAxf-OK4w/exec";
+
+  const video = document.getElementById("video");
+  const canvas = document.getElementById("canvas");
+  const btnAmbilFoto = document.getElementById("btnAmbilFoto");
+  const selectNama = document.getElementById("nama");
+  const gpsStatus = document.getElementById("gpsStatus");
+  const gpsText = document.getElementById("gpsText");
+  const form = document.getElementById("formAbsen");
+  const btnKirim = document.getElementById("btnKirim");
+  const pesan = document.getElementById("pesan");
+
+  let fotoBase64 = "";
+  let sudahFoto = false;
+  let linkLokasiMaps = "";
+
+  // 1. Update Jam Real-Time
+  function updateClock() {
+    const now = new Date();
+    document.getElementById("liveClock").textContent = now.toLocaleString("id-ID", {
+      weekday: 'long', day: 'numeric', month: 'short', year: 'numeric',
+      hour: '2-digit', minute: '2-digit', second: '2-digit'
+    });
+  }
+  setInterval(updateClock, 1000);
+  updateClock();
+
+  // 2. Deteksi Lokasi GPS
+  function deteksiLokasi() {
+    if (!navigator.geolocation) {
+      gpsText.textContent = "Perangkat tidak mendukung GPS";
+      gpsStatus.className = "badge gps-err";
+      return;
+    }
+
+    navigator.geolocation.getCurrentPosition(
+      (position) => {
+        const lat = position.coords.latitude;
+        const lng = position.coords.longitude;
+        linkLokasiMaps = `https://www.google.com/maps?q=${lat},${lng}`;
+        gpsText.textContent = `Lokasi Terkunci (${lat.toFixed(5)}, ${lng.toFixed(5)})`;
+        gpsStatus.className = "badge gps-ok";
+      },
+      () => {
+        gpsText.textContent = "GPS mati / izin ditolak. Aktifkan lalu refresh.";
+        gpsStatus.className = "badge gps-err";
+      },
+      { enableHighAccuracy: true, timeout: 10000 }
+    );
+  }
+
+  // 3. Muat Daftar Karyawan (Metode JSONP)
+  function muatDaftarKaryawan() {
+    window.tampilkanKaryawan = function(data) {
+      if (data.status === "success" && data.karyawan.length > 0) {
+        selectNama.innerHTML = '<option value="">-- Pilih Nama Karyawan --</option>';
+        data.karyawan.forEach(nama => {
+          const option = document.createElement("option");
+          option.value = nama;
+          option.textContent = nama;
+          selectNama.appendChild(option);
         });
+      } else if (data.karyawan && data.karyawan.length === 0) {
+        selectNama.innerHTML = '<option value="">-- Daftar nama kosong --</option>';
+      } else {
+        selectNama.innerHTML = `<option value="">Error: ${data.message}</option>`;
+      }
+    };
 
-        // Akses Kamera
-        const video = document.getElementById('video');
-        const canvas = document.getElementById('canvas');
-        const preview = document.getElementById('preview');
+    const script = document.createElement("script");
+    script.src = SCRIPT_URL + "?callback=tampilkanKaryawan";
+    script.onerror = function() {
+      selectNama.innerHTML = '<option value="">Gagal terhubung ke server</option>';
+    };
+    document.body.appendChild(script);
+  }
 
-        navigator.mediaDevices.getUserMedia({ video: { facingMode: 'user' } })
-            .then(stream => { video.srcObject = stream; })
-            .catch(err => { alert("Gagal mengakses kamera: " + err); });
+  // 4. Nyalakan Kamera Depan
+  async function nyalakanKamera() {
+    try {
+      const stream = await navigator.mediaDevices.getUserMedia({
+        video: { facingMode: "user" },
+        audio: false
+      });
+      video.srcObject = stream;
+    } catch (err) {
+      alert("Izin kamera ditolak atau perangkat tidak memiliki kamera.");
+    }
+  }
 
-        document.getElementById('snap').addEventListener('click', () => {
-            canvas.width = video.videoWidth;
-            canvas.height = video.videoHeight;
-            let ctx = canvas.getContext('2d');
-            ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
-            fotoBase64 = canvas.toDataURL('image/jpeg');
-            
-            preview.src = fotoBase64;
-            preview.classList.remove('hidden');
-            video.classList.add('hidden');
-        });
+  // 5. Ambil / Ulangi Foto
+  btnAmbilFoto.addEventListener("click", () => {
+    if (!sudahFoto) {
+      const width = 480;
+      const height = (video.videoHeight / video.videoWidth) * width;
+      canvas.width = width;
+      canvas.height = height;
 
-        // Ambil Lokasi GPS
-        if (navigator.geolocation) {
-            navigator.geolocation.getCurrentPosition(position => {
-                koordinatGPS = `${position.coords.latitude}, ${position.coords.longitude}`;
-                document.getElementById('lokasi').value = koordinatGPS;
-            }, error => {
-                document.getElementById('lokasi').value = "Gagal mendeteksi GPS (Aktifkan Lokasi)";
-            });
-        } else {
-            document.getElementById('lokasi').value = "GPS tidak didukung browser ini";
-        }
+      const ctx = canvas.getContext("2d");
+      ctx.save();
+      ctx.scale(-1, 1);
+      ctx.drawImage(video, -width, 0, width, height);
+      ctx.restore();
 
-        // Submit Form
-        const form = document.getElementById('attendanceForm');
-        form.addEventListener('submit', e => {
-            e.preventDefault();
-            if (!fotoBase64) {
-                alert('Silakan ambil foto terlebih dahulu!');
-                return;
-            }
+      fotoBase64 = canvas.toDataURL("image/jpeg", 0.75);
 
-            const btn = document.getElementById('submitBtn');
-            btn.disabled = true;
-            btn.innerText = 'Mengirim...';
+      video.style.display = "none";
+      canvas.style.display = "block";
+      canvas.style.transform = "none";
+      btnAmbilFoto.textContent = "Ulangi Foto";
+      btnAmbilFoto.classList.add("retake");
+      sudahFoto = true;
+    } else {
+      video.style.display = "block";
+      canvas.style.display = "none";
+      btnAmbilFoto.textContent = "Ambil Foto";
+      btnAmbilFoto.classList.remove("retake");
+      fotoBase64 = "";
+      sudahFoto = false;
+    }
+  });
 
-            const data = {
-                nama: document.getElementById('nama').value,
-                tipe: document.getElementById('tipe').value,
-                gantiShift: document.getElementById('gantiShift').value.trim(),
-                status: document.getElementById('status').value,
-                lokasi: koordinatGPS,
-                foto: fotoBase64
-            };
+  // 6. Kirim Data Absensi
+  form.addEventListener("submit", async (e) => {
+    e.preventDefault();
 
-            fetch(scriptURL, { method: 'POST', body: JSON.stringify(data) })
-                .then(response => {
-                    document.getElementById('message').innerText = 'Absensi berhasil dikirim!';
-                    document.getElementById('message').className = 'mt-4 text-center text-sm font-medium text-green-600';
-                    setTimeout(() => location.reload(), 2000);
-                })
-                .catch(error => {
-                    document.getElementById('message').innerText = 'Gagal mengirim absensi!';
-                    document.getElementById('message').className = 'mt-4 text-center text-sm font-medium text-red-600';
-                    btn.disabled = false;
-                    btn.innerText = 'Kirim Absensi';
-                });
-        });
-    </script>
+    if (!linkLokasiMaps) {
+      alert("Lokasi GPS belum terdeteksi. Izinkan akses lokasi lalu muat ulang halaman.");
+      deteksiLokasi();
+      return;
+    }
+
+    if (!sudahFoto || !fotoBase64) {
+      alert("Silakan ambil foto bukti kehadiran terlebih dahulu.");
+      return;
+    }
+
+    const jenisTerpilih = document.querySelector('input[name="jenisAbsen"]:checked').value;
+
+    btnKirim.disabled = true;
+    btnKirim.textContent = "Menyimpan absensi...";
+    pesan.textContent = "";
+
+    const payload = {
+      nama: selectNama.value,
+      jenisAbsen: jenisTerpilih,
+      keterangan: document.getElementById("keterangan").value,
+      fotoBase64: fotoBase64,
+      lokasi: linkLokasiMaps
+    };
+
+    try {
+      await fetch(SCRIPT_URL, {
+        method: "POST",
+        headers: { "Content-Type": "text/plain;charset=utf-8" },
+        body: JSON.stringify(payload)
+      });
+
+      pesan.style.color = "#059669";
+      pesan.textContent = "Absensi Tripoint Mart berhasil tercatat!";
+
+      form.reset();
+      video.style.display = "block";
+      canvas.style.display = "none";
+      btnAmbilFoto.textContent = "Ambil Foto";
+      btnAmbilFoto.classList.remove("retake");
+      fotoBase64 = "";
+      sudahFoto = false;
+    } catch (error) {
+      pesan.style.color = "#dc2626";
+      pesan.textContent = "Gagal mengirim data. Periksa koneksi internet Anda.";
+    } finally {
+      btnKirim.disabled = false;
+      btnKirim.textContent = "Kirim Absensi";
+    }
+  });
+
+  deteksiLokasi();
+  muatDaftarKaryawan();
+  nyalakanKamera();
+</script>
+
 </body>
 </html>
