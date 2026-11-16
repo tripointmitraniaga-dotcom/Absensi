@@ -3,184 +3,134 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Aplikasi Absensi Karyawan</title>
-    <style>
-        body { font-family: sans-serif; max-width: 400px; margin: 40px auto; padding: 20px; background-color: #f9f9f9; }
-        .container { background-color: white; padding: 20px; border-radius: 8px; box-shadow: 0 4px 8px rgba(0,0,0,0.1); }
-        label, select, input, button { display: block; width: 100%; margin-bottom: 10px; }
-        input, select { padding: 10px; box-sizing: border-box; border: 1px solid #ccc; border-radius: 4px; }
-        
-        button { padding: 12px; background-color: #004791; color: white; border: none; cursor: pointer; border-radius: 4px; font-weight: bold; }
-        button:hover { background-color: #003366; }
-        #btnCapture { background-color: #ff751f; margin-bottom: 20px; }
-        #btnCapture:hover { background-color: #e66819; }
-        
-        #video-container { text-align: center; margin-bottom: 15px; }
-        video { width: 100%; border-radius: 4px; border: 1px solid #ccc; background-color: #000; }
-        canvas { display: none; }
-        img#preview { display: none; width: 100%; border-radius: 4px; border: 1px solid #ccc; margin-bottom: 15px; }
-        
-        .status-box { font-size: 0.9em; padding: 10px; margin-bottom: 15px; border-radius: 4px; background-color: #eef; border: 1px solid #ccd; }
-        #notifikasi { margin-top: 15px; font-weight: bold; text-align: center; }
-    </style>
+    <title>Aplikasi Absensi - Tripoint Mart</title>
+    <script src="https://cdn.tailwindcss.com"></script>
 </head>
-<body>
+<body class="bg-slate-100 min-h-screen flex items-center justify-center p-4">
+    <div class="bg-white shadow-lg rounded-2xl w-full max-w-md p-6">
+        <div class="text-center mb-6">
+            <h1 class="text-2xl font-bold text-slate-800">Tripoint Mart</h1>
+            <p class="text-sm text-slate-500">Sistem Absensi Karyawan</p>
+        </div>
 
-    <div class="container">
-        <h2>Form Absensi</h2>
-        <form id="formAbsen">
-            
-            <label for="tipeAbsen">Tipe Absen:</label>
-            <select id="tipeAbsen" required>
-                <option value="Masuk">Absen Masuk</option>
-                <option value="Pulang">Absen Pulang</option>
-            </select>
-
-            <label for="nama">Nama Lengkap:</label>
-            <input type="text" id="nama" required>
-
-            <label for="status">Status Kehadiran:</label>
-            <select id="status">
-                <option value="Hadir">Hadir</option>
-                <option value="Sakit">Sakit</option>
-                <option value="Izin">Izin</option>
-            </select>
-
-            <label>Lokasi GPS:</label>
-            <div class="status-box" id="lokasiStatus">Mencari lokasi... Pastikan GPS aktif.</div>
-            <input type="hidden" id="gpsData">
-
-            <label>Selfie Bukti Kehadiran:</label>
-            <div id="video-container">
-                <video id="camera" autoplay playsinline></video>
+        <form id="attendanceForm" class="space-y-4">
+            <div>
+                <label class="block text-sm font-medium text-slate-700 mb-1">Nama Karyawan</label>
+                <input type="text" id="nama" required placeholder="Masukkan nama lengkap" class="w-full px-4 py-2 border rounded-xl focus:ring-2 focus:ring-blue-500 outline-none">
             </div>
-            <img id="preview" alt="Hasil Foto">
-            <input type="hidden" id="fotoData">
-            
-            <button type="button" id="btnCapture">Ambil Foto</button>
 
-            <button type="submit" id="btnSubmit" disabled>Kirim Absen (Tunggu GPS & Foto)</button>
+            <div>
+                <label class="block text-sm font-medium text-slate-700 mb-1">Jenis Absensi</label>
+                <select id="tipe" class="w-full px-4 py-2 border rounded-xl focus:ring-2 focus:ring-blue-500 outline-none">
+                    <option value="Masuk">Masuk Kerja</option>
+                    <option value="Istirahat">Istirahat</option>
+                    <option value="Pulang">Pulang Kerja</option>
+                </select>
+            </div>
+
+            <div>
+                <label class="block text-sm font-medium text-slate-700 mb-1">Status Kehadiran</label>
+                <select id="status" class="w-full px-4 py-2 border rounded-xl focus:ring-2 focus:ring-blue-500 outline-none">
+                    <option value="Hadir">Hadir</option>
+                    <option value="Terlambat">Terlambat</option>
+                    <option value="Izin">Izin</option>
+                    <option value="Sakit">Sakit</option>
+                </select>
+            </div>
+
+            <div>
+                <label class="block text-sm font-medium text-slate-700 mb-1">Bukti Foto (Selfie)</label>
+                <div class="flex flex-col items-center space-y-2">
+                    <video id="video" autoplay playsinline class="w-full h-48 bg-black rounded-xl object-cover"></video>
+                    <button type="button" id="snap" class="w-full bg-slate-800 text-white py-2 rounded-xl text-sm font-medium hover:bg-slate-700 transition">Ambil Foto</button>
+                    <canvas id="canvas" class="hidden"></canvas>
+                    <img id="preview" class="hidden w-full h-48 rounded-xl object-cover border">
+                </div>
+            </div>
+
+            <div>
+                <label class="block text-sm font-medium text-slate-700 mb-1">Lokasi GPS</label>
+                <input type="text" id="lokasi" readonly placeholder="Mendapatkan lokasi..." class="w-full px-4 py-2 bg-slate-50 border rounded-xl text-slate-500 text-sm">
+            </div>
+
+            <button type="submit" id="submitBtn" class="w-full bg-blue-600 text-white py-3 rounded-xl font-semibold hover:bg-blue-700 transition shadow-lg shadow-blue-200">Kirim Absensi</button>
         </form>
 
-        <div id="notifikasi"></div>
+        <div id="message" class="mt-4 text-center text-sm font-medium"></div>
     </div>
 
     <script>
-        // URL WEB APP SUDAH DIMASUKKAN DI SINI
-        const GAS_URL = 'https://script.google.com/macros/s/AKfycbwWck98UR0-zc7qXmj9rme0Beb2Oe4afhpYr5HmCS5Cc78XJuzkUASav9r69BXA94g/exec'; 
+        const scriptURL = 'https://script.google.com/macros/s/AKfycbyUsS3xl0X08A_FmaU3MjUfGL12J59IX4OC1XsdVM1Chb7i4fKBrFHggJAuLaV3MC6H/exec';
+        let fotoBase64 = null;
+        let koordinatGPS = '';
 
-        const form = document.getElementById('formAbsen');
-        const btnSubmit = document.getElementById('btnSubmit');
-        const notifikasi = document.getElementById('notifikasi');
-        
-        const camera = document.getElementById('camera');
-        const btnCapture = document.getElementById('btnCapture');
+        // Akses Kamera
+        const video = document.getElementById('video');
+        const canvas = document.getElementById('canvas');
         const preview = document.getElementById('preview');
-        const fotoData = document.getElementById('fotoData');
-        const lokasiStatus = document.getElementById('lokasiStatus');
-        const gpsData = document.getElementById('gpsData');
+        const snapBtn = id => document.getElementById('snap');
 
-        let isLocationReady = false;
-        let isPhotoReady = false;
+        navigator.mediaDevices.getUserMedia({ video: { facingMode: 'user' } })
+            .then(stream => { video.srcObject = stream; })
+            .catch(err => { alert("Gagal mengakses kamera: " + err); });
 
-        function checkReadyStatus() {
-            if (isLocationReady && isPhotoReady) {
-                btnSubmit.disabled = false;
-                btnSubmit.textContent = 'Kirim Absen';
-            }
-        }
-
-        if (navigator.geolocation) {
-            navigator.geolocation.getCurrentPosition(
-                (position) => {
-                    const lat = position.coords.latitude;
-                    const lon = position.coords.longitude;
-                    gpsData.value = `https://www.google.com/maps?q=${lat},${lon}`;
-                    lokasiStatus.textContent = `Titik didapatkan: ${lat.toFixed(5)}, ${lon.toFixed(5)}`;
-                    lokasiStatus.style.backgroundColor = '#d4edda';
-                    isLocationReady = true;
-                    checkReadyStatus();
-                },
-                (error) => {
-                    lokasiStatus.textContent = 'Gagal akses GPS. Izinkan lokasi di browser.';
-                    lokasiStatus.style.backgroundColor = '#f8d7da';
-                },
-                { enableHighAccuracy: true }
-            );
-        }
-
-        navigator.mediaDevices.getUserMedia({ video: { facingMode: "user" } })
-            .then(stream => { camera.srcObject = stream; })
-            .catch(error => { notifikasi.textContent = 'Gagal mengakses kamera.'; });
-
-        btnCapture.addEventListener('click', () => {
-            const canvas = document.createElement('canvas');
-            canvas.width = camera.videoWidth;
-            canvas.height = camera.videoHeight;
-            const context = canvas.getContext('2d');
-            context.drawImage(camera, 0, 0, canvas.width, canvas.height);
+        document.getElementById('snap').addEventListener('click', () => {
+            canvas.width = video.videoWidth;
+            canvas.height = video.videoHeight;
+            let ctx = canvas.getContext('2d');
+            ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+            fotoBase64 = canvas.toDataURL('image/jpeg');
             
-            const imageData = canvas.toDataURL('image/jpeg', 0.7);
-            fotoData.value = imageData;
-            preview.src = imageData;
-            
-            camera.style.display = 'none';
-            preview.style.display = 'block';
-            btnCapture.textContent = 'Foto Ulang';
-            
-            isPhotoReady = true;
-            checkReadyStatus();
-
-            btnCapture.onclick = function() {
-                camera.style.display = 'block';
-                preview.style.display = 'none';
-                fotoData.value = '';
-                btnCapture.textContent = 'Ambil Foto';
-                isPhotoReady = false;
-                btnSubmit.disabled = true;
-            }
+            preview.src = fotoBase64;
+            preview.classList.remove('hidden');
+            video.classList.add('hidden');
         });
 
-        form.addEventListener('submit', function(e) {
-            e.preventDefault();
-            
-            btnSubmit.disabled = true;
-            btnSubmit.textContent = 'Mengunggah data & foto...';
-            notifikasi.style.color = 'black';
-            notifikasi.textContent = 'Mohon tunggu, proses upload...';
+        // Ambil Lokasi GPS
+        if (navigator.geolocation) {
+            navigator.geolocation.getCurrentPosition(position => {
+                koordinatGPS = `${position.coords.latitude}, ${position.coords.longitude}`;
+                document.getElementById('lokasi').value = koordinatGPS;
+            }, error => {
+                document.getElementById('lokasi').value = "Gagal mendeteksi GPS (Aktifkan Lokasi)";
+            });
+        } else {
+            document.getElementById('lokasi').value = "GPS tidak didukung browser ini";
+        }
 
-            const payload = {
-                tipeAbsen: document.getElementById('tipeAbsen').value,
+        // Submit Form
+        const form = document.getElementById('attendanceForm');
+        form.addEventListener('submit', e => {
+            e.preventDefault();
+            if (!fotoBase64) {
+                alert('Silakan ambil foto terlebih dahulu!');
+                return;
+            }
+
+            const btn = document.getElementById('submitBtn');
+            btn.disabled = true;
+            btn.innerText = 'Mengirim...';
+
+            const data = {
                 nama: document.getElementById('nama').value,
+                tipe: document.getElementById('tipe').value,
                 status: document.getElementById('status').value,
-                gps: gpsData.value,
-                foto: fotoData.value
+                lokasi: koordinatGPS,
+                foto: fotoBase64
             };
 
-            fetch(GAS_URL, {
-                method: 'POST',
-                headers: { 'Content-Type': 'text/plain;charset=utf-8' },
-                body: JSON.stringify(payload)
-            })
-            .then(response => response.json())
-            .then(data => {
-                if(data.status === "success") {
-                    notifikasi.style.color = 'green';
-                    notifikasi.textContent = data.message;
-                    
-                    setTimeout(() => { location.reload(); }, 2500);
-                } else {
-                    notifikasi.style.color = 'red';
-                    notifikasi.textContent = 'Gagal menyimpan absensi.';
-                    btnSubmit.disabled = false;
-                }
-            })
-            .catch(error => {
-                notifikasi.style.color = 'red';
-                notifikasi.textContent = 'Terjadi kesalahan jaringan saat upload.';
-                btnSubmit.disabled = false;
-                btnSubmit.textContent = 'Coba Kirim Lagi';
-            });
+            fetch(scriptURL, { method: 'POST', body: JSON.stringify(data) })
+                .then(response => {
+                    document.getElementById('message').innerText = 'Absensi berhasil dikirim!';
+                    document.getElementById('message').className = 'mt-4 text-center text-sm font-medium text-green-600';
+                    setTimeout(() => location.reload(), 2000);
+                })
+                .catch(error => {
+                    document.getElementById('message').innerText = 'Gagal mengirim absensi!';
+                    document.getElementById('message').className = 'mt-4 text-center text-sm font-medium text-red-600';
+                    btn.disabled = false;
+                    btn.innerText = 'Kirim Absensi';
+                });
         });
     </script>
 </body>
